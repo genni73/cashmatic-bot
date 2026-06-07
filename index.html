@@ -338,6 +338,7 @@ function showScene(idx) {
     s.el.classList.toggle('active', i === idx);
   });
   dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  speakScene(idx);
 }
 
 function animate(ts) {
@@ -369,6 +370,8 @@ function start() {
   current = 0;
   startTime = null;
   elapsed = 0;
+  lastSpokenScene = -1;
+  synth.cancel();
   replayEl.classList.remove('show');
   progressEl.style.width = '0%';
   showScene(0);
@@ -402,6 +405,78 @@ dots.forEach((d) => {
     replayEl.classList.remove('show');
     if (!rafId) rafId = requestAnimationFrame(animate);
   });
+});
+
+// ── VOCE STILE SIRI (Web Speech API – funziona su iPhone Safari) ──
+const VOICE_SCRIPT = [
+  { scene: 0, text: "Casse automatiche, per il denaro punto it." },
+  { scene: 1, text: "Stai ancora contando i soldi a mano?" },
+  { scene: 2, text: "Ecco la soluzione. Cashmatic Selfpay millesessanta. La cassa automatica più veloce sul mercato!" },
+  { scene: 3, text: "I vantaggi? Velocissima: processa banconote in meno di un secondo. Completamente automatica: conta banconote e monete da sola. Zero errori: addio ammanchi e differenze di cassa. Sicurezza ventiquattro ore su ventiquattro: il denaro sempre protetto." },
+  { scene: 4, text: "Vuoi saperne di più? Visita perIlDenaro punto it, oppure chiamaci ora! Assistenza, vendita e noleggio." },
+  { scene: 5, text: "GF Casse Automatiche. Seguici su TikTok per altri video!" },
+];
+
+let synth = window.speechSynthesis;
+let voiceEnabled = false;
+let lastSpokenScene = -1;
+
+function getItalianVoice() {
+  const voices = synth.getVoices();
+  return (
+    voices.find(v => v.lang === 'it-IT' && v.localService) ||
+    voices.find(v => v.lang === 'it-IT') ||
+    voices.find(v => v.lang.startsWith('it')) ||
+    voices[0]
+  );
+}
+
+function speakScene(sceneIdx) {
+  if (!voiceEnabled || lastSpokenScene === sceneIdx) return;
+  const entry = VOICE_SCRIPT.find(s => s.scene === sceneIdx);
+  if (!entry) return;
+  synth.cancel();
+  const utt = new SpeechSynthesisUtterance(entry.text);
+  utt.lang = 'it-IT';
+  utt.rate = 1.05;
+  utt.pitch = 1.1;
+  utt.volume = 1;
+  const v = getItalianVoice();
+  if (v) utt.voice = v;
+  synth.speak(utt);
+  lastSpokenScene = sceneIdx;
+}
+
+// Bottone microfono per attivare la voce (richiesto da Safari per autoplay audio)
+const micBtn = document.createElement('div');
+micBtn.id = 'mic-btn';
+micBtn.innerHTML = '🔇';
+micBtn.title = 'Attiva voce';
+micBtn.style.cssText = `
+  position:absolute; top:24px; right:20px;
+  background:rgba(0,204,255,0.2); border:2px solid #00ccff;
+  border-radius:50%; width:56px; height:56px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; cursor:pointer; z-index:200;
+  transition: background 0.3s;
+`;
+document.getElementById('screen').appendChild(micBtn);
+
+micBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  voiceEnabled = !voiceEnabled;
+  micBtn.innerHTML = voiceEnabled ? '🔊' : '🔇';
+  micBtn.style.background = voiceEnabled ? 'rgba(0,204,255,0.4)' : 'rgba(0,204,255,0.2)';
+  if (voiceEnabled) {
+    lastSpokenScene = -1;
+    speakScene(current);
+    // Pre-carica voci su Safari
+    if (synth.getVoices().length === 0) {
+      synth.onvoiceschanged = () => speakScene(current);
+    }
+  } else {
+    synth.cancel();
+  }
 });
 
 // Auto-start

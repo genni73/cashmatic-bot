@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - claude/udynamic-workflow-install-zL0US
+  pull_request:
+    branches:
+      - main
+      - claude/udynamic-workflow-install-zL0US
+
+jobs:
+  build:
+    name: Lint & Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check syntax (node --check)
+        run: node --check index.js
+
+      - name: Verify index.js is syntactically valid
+        run: |
+          if node --check index.js; then
+            echo "✅ index.js syntax OK"
+          else
+            echo "❌ index.js has syntax errors"
+            exit 1
+          fi

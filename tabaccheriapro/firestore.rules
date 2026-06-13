@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() { return request.auth != null; }
+    function getUser() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isAdmin() { return getUser().ruolo == 'admin'; }
+    function belongsTo(tabaccheria_id) {
+      return getUser().tabaccheria_id == tabaccheria_id;
+    }
+
+    match /users/{uid} {
+      allow read: if isAuth() && request.auth.uid == uid;
+      allow create: if isAuth() && request.auth.uid == uid;
+      allow update: if isAuth() && request.auth.uid == uid;
+    }
+
+    match /tabaccherie/{tabId} {
+      allow read: if isAuth() && belongsTo(tabId);
+      allow write: if isAuth() && belongsTo(tabId) && isAdmin();
+
+      match /vendite/{yearMonth}/items/{docId} {
+        allow read: if isAuth() && belongsTo(tabId);
+        allow write: if isAuth() && belongsTo(tabId)
+                     && (isAdmin() || getUser().ruolo == 'operatore');
+      }
+
+      match /costi/{yearMonth}/items/{docId} {
+        allow read: if isAuth() && belongsTo(tabId);
+        allow write: if isAuth() && belongsTo(tabId)
+                     && (isAdmin() || getUser().ruolo == 'operatore');
+      }
+
+      match /perdite/{yearMonth}/items/{docId} {
+        allow read: if isAuth() && belongsTo(tabId);
+        allow write: if isAuth() && belongsTo(tabId)
+                     && (isAdmin() || getUser().ruolo == 'operatore');
+      }
+
+      match /analytics/{yearMonth} {
+        allow read: if isAuth() && belongsTo(tabId);
+        allow write: if false;
+      }
+
+      match /syncLog/{docId} {
+        allow read: if isAuth() && belongsTo(tabId);
+        allow write: if isAuth() && belongsTo(tabId) && isAdmin();
+      }
+    }
+  }
+}

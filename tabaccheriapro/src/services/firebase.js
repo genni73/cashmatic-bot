@@ -9,7 +9,7 @@ const firebaseConfig = {
   projectId: "tabaccheriapro",
   storageBucket: "tabaccheriapro.firebasestorage.app",
   messagingSenderId: "777629507450",
-  appId: "1:777629507450:web:7481719bf9cc538270c0c3"
+  appId: "1:777629507450:web:8065552620f8e62c70c0c3"
 };
 
 const app = initializeApp(firebaseConfig);

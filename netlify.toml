@@ -1,0 +1,9 @@
+[build]
+  base = "tabaccheriapro"
+  command = "npm install && npm run build"
+  publish = "tabaccheriapro/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

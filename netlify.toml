@@ -1,7 +1,10 @@
 [build]
   base = "tabaccheriapro"
-  command = "npm install && npm run build"
-  publish = "tabaccheriapro/dist"
+  publish = "dist"
+  command = "npm ci && npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
 
 [[redirects]]
   from = "/*"

@@ -1,10 +1,10 @@
 [build]
-  base = "tabaccheriapro"
-  publish = "dist"
-  command = "npm ci && npm run build"
+  publish = "tabaccheriapro/dist"
+  command = "cd tabaccheriapro && npm install && npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 [[redirects]]
   from = "/*"

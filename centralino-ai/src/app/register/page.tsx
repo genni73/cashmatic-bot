@@ -45,21 +45,27 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
 
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
 
-    const data = await res.json()
+      const data = await res.json()
 
-    if (!res.ok) {
-      setError(data.error || 'Errore nella registrazione')
+      if (!res.ok) {
+        setError(data.error || 'Errore nella registrazione')
+        setLoading(false)
+        return
+      }
+
+      router.push('/admin/dashboard')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Errore di connessione al server'
+      setError(message)
       setLoading(false)
-      return
     }
-
-    router.push('/admin/dashboard')
   }
 
   return (

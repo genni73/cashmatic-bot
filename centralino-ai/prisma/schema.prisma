@@ -1,0 +1,181 @@
+// Cashmatic Bot - Centralino AI
+// Universal AI phone/chat system for businesses
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── User ────────────────────────────────────────────────────────────────────
+// Admin users who manage businesses
+// role valid values: OWNER, ADMIN, STAFF
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  password   String // hashed
+  name       String
+  role       String   @default("ADMIN") // OWNER | ADMIN | STAFF
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([businessId])
+  @@index([email])
+  @@map("users")
+}
+
+// ─── Business ────────────────────────────────────────────────────────────────
+// The business/tenant
+// type valid values: RESTAURANT, HAIR_SALON, BEAUTY_CENTER, MEDICAL_OFFICE,
+//   DENTAL_OFFICE, HOTEL, GYM, SPORTS_CENTER, VETERINARY, REAL_ESTATE,
+//   AUTO_REPAIR, BAKERY, BAR, CATERING, PHARMACY, OTHER
+// aiTone valid values: FRIENDLY, FORMAL, PROFESSIONAL
+model Business {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  type               String   @default("OTHER") // see valid values above
+  phone              String?
+  email              String?
+  website            String?
+  address            String?
+  city               String?
+  province           String?
+  zipCode            String?
+  country            String   @default("IT")
+  description        String?
+  logoUrl            String?
+  openingHours       String? // JSON string representing opening hours per day
+  aiTone             String   @default("FRIENDLY") // FRIENDLY | FORMAL | PROFESSIONAL
+  aiWelcomeMessage   String?
+  aiClosingMessage   String?
+  whatsappToken      String?
+  whatsappPhoneId    String?
+  twilioAccountSid   String?
+  twilioAuthToken    String?
+  twilioPhoneNumber  String?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  users         User[]
+  services      Service[]
+  bookings      Booking[]
+  conversations Conversation[]
+  faqs          FAQ[]
+
+  @@index([slug])
+  @@map("businesses")
+}
+
+// ─── Service ─────────────────────────────────────────────────────────────────
+// Services or menu items offered by the business
+model Service {
+  id          String   @id @default(cuid())
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  category    String?
+  price       Float?
+  duration    Int? // duration in minutes
+  isAvailable Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings Booking[]
+
+  @@index([businessId])
+  @@map("services")
+}
+
+// ─── Booking ─────────────────────────────────────────────────────────────────
+// Reservations and appointments
+// status valid values: PENDING, CONFIRMED, CANCELLED, COMPLETED
+// source valid values: WHATSAPP, PHONE, WEB, MANUAL
+model Booking {
+  id             String   @id @default(cuid())
+  businessId     String
+  business       Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  serviceId      String?
+  service        Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  customerName   String
+  customerPhone  String
+  customerEmail  String?
+  date           DateTime
+  time           String
+  duration       Int      @default(30) // duration in minutes
+  numberOfPeople Int? // for restaurant reservations
+  status         String   @default("PENDING") // PENDING | CONFIRMED | CANCELLED | COMPLETED
+  notes          String?
+  source         String   @default("MANUAL") // WHATSAPP | PHONE | WEB | MANUAL
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([businessId])
+  @@index([serviceId])
+  @@index([date])
+  @@index([status])
+  @@map("bookings")
+}
+
+// ─── Conversation ────────────────────────────────────────────────────────────
+// Chat and call logs
+// channel valid values: WHATSAPP, PHONE, SMS
+// status valid values: ACTIVE, CLOSED
+model Conversation {
+  id            String   @id @default(cuid())
+  businessId    String
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customerPhone String
+  customerName  String?
+  channel       String // WHATSAPP | PHONE | SMS
+  status        String   @default("ACTIVE") // ACTIVE | CLOSED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([businessId])
+  @@index([customerPhone])
+  @@map("conversations")
+}
+
+// ─── Message ─────────────────────────────────────────────────────────────────
+// Individual messages within a conversation
+// role valid values: USER, ASSISTANT, SYSTEM
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String // USER | ASSISTANT | SYSTEM
+  content        String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+// ─── FAQ ─────────────────────────────────────────────────────────────────────
+// Custom FAQ entries per business
+model FAQ {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  question   String
+  answer     String
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([businessId])
+  @@map("faqs")
+}

@@ -23,13 +23,13 @@ interface Props {
   hasNumberOfPeople: boolean
 }
 
-const statusColors: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-700',
-  CONFIRMED: 'bg-green-100 text-green-700',
-  ARRIVED: 'bg-blue-100 text-blue-700',
-  CANCELLED: 'bg-red-100 text-red-700',
-  COMPLETED: 'bg-gray-100 text-gray-700',
-  WAITLIST: 'bg-orange-100 text-orange-700',
+const statusColors: Record<string, { bg: string; text: string }> = {
+  PENDING: { bg: 'rgba(234,179,8,0.15)', text: '#eab308' },
+  CONFIRMED: { bg: 'rgba(34,197,94,0.15)', text: '#22c55e' },
+  ARRIVED: { bg: 'rgba(59,130,246,0.15)', text: '#3b82f6' },
+  CANCELLED: { bg: 'rgba(239,68,68,0.15)', text: '#ef4444' },
+  COMPLETED: { bg: 'rgba(107,114,128,0.15)', text: '#6b7280' },
+  WAITLIST: { bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
 }
 
 const statusLabels: Record<string, string> = {
@@ -70,11 +70,11 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
           <button
             key={s}
             onClick={() => setFilterStatus(s)}
-            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
-              filterStatus === s
-                ? 'bg-blue-600 text-white'
-                : s === 'ALL' ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : `${statusColors[s]} hover:opacity-80`
-            }`}
+            className="text-xs px-3 py-1.5 rounded-full font-medium transition-colors"
+            style={{
+              background: filterStatus === s ? 'var(--accent)' : s === 'ALL' ? 'var(--bg-secondary)' : statusColors[s]?.bg || 'var(--bg-secondary)',
+              color: filterStatus === s ? '#fff' : s === 'ALL' ? 'var(--text-secondary)' : statusColors[s]?.text || 'var(--text-secondary)',
+            }}
           >
             {s === 'ALL' ? 'Tutte' : statusLabels[s]} ({counts[s]})
           </button>
@@ -82,40 +82,43 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-          <p className="text-gray-500">Nessuna prenotazione {filterStatus !== 'ALL' ? `con stato "${statusLabels[filterStatus]}"` : ''}.</p>
+        <div className="rounded-xl shadow-sm border p-12 text-center" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+          <p style={{ color: 'var(--text-muted)' }}>Nessuna prenotazione {filterStatus !== 'ALL' ? `con stato "${statusLabels[filterStatus]}"` : ''}.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="rounded-xl shadow-sm border overflow-hidden" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)' }}>
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Cliente</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Servizio</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Data</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Ora</th>
-                {hasNumberOfPeople && <th className="text-left px-4 py-3 font-medium text-gray-600">Persone</th>}
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Canale</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Stato</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Azioni</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Cliente</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Servizio</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Data</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Ora</th>
+                {hasNumberOfPeople && <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Persone</th>}
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Canale</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Stato</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'var(--text-muted)' }}>Azioni</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {filtered.map((b) => (
-                <tr key={b.id} className="hover:bg-gray-50">
+                <tr key={b.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                   <td className="px-4 py-3">
-                    <p className="font-medium text-gray-900">{b.customerName}</p>
-                    <p className="text-xs text-gray-500">{b.customerPhone}</p>
+                    <p className="font-medium" style={{ color: 'var(--text-primary)' }}>{b.customerName}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{b.customerPhone}</p>
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{b.service?.name || '-'}</td>
-                  <td className="px-4 py-3 text-gray-700">{new Date(b.date).toLocaleDateString('it-IT')}</td>
-                  <td className="px-4 py-3 text-gray-700">{b.time}</td>
-                  {hasNumberOfPeople && <td className="px-4 py-3 text-gray-700">{b.numberOfPeople || '-'}</td>}
+                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{b.service?.name || '-'}</td>
+                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{new Date(b.date).toLocaleDateString('it-IT')}</td>
+                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{b.time}</td>
+                  {hasNumberOfPeople && <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{b.numberOfPeople || '-'}</td>}
                   <td className="px-4 py-3">
-                    <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded">{b.source}</span>
+                    <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>{b.source}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-1 rounded-full ${statusColors[b.status] || ''}`}>
+                    <span className="text-xs px-2 py-1 rounded-full" style={{
+                      background: statusColors[b.status]?.bg || '',
+                      color: statusColors[b.status]?.text || '',
+                    }}>
                       {statusLabels[b.status] || b.status}
                     </span>
                   </td>
@@ -123,24 +126,24 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
                     <div className="flex gap-1 flex-wrap">
                       {b.status === 'PENDING' && (
                         <>
-                          <button onClick={() => updateStatus(b.id, 'CONFIRMED')} className="text-xs text-green-600 hover:underline">Conferma</button>
-                          <button onClick={() => updateStatus(b.id, 'WAITLIST')} className="text-xs text-orange-600 hover:underline">In Lista</button>
-                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs text-red-600 hover:underline">Elimina</button>
+                          <button onClick={() => updateStatus(b.id, 'CONFIRMED')} className="text-xs hover:underline" style={{ color: '#22c55e' }}>Conferma</button>
+                          <button onClick={() => updateStatus(b.id, 'WAITLIST')} className="text-xs hover:underline" style={{ color: '#f97316' }}>In Lista</button>
+                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs hover:underline" style={{ color: '#ef4444' }}>Elimina</button>
                         </>
                       )}
                       {b.status === 'CONFIRMED' && (
                         <>
-                          <button onClick={() => updateStatus(b.id, 'ARRIVED')} className="text-xs text-blue-600 hover:underline">Arrivato</button>
-                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs text-red-600 hover:underline">Elimina</button>
+                          <button onClick={() => updateStatus(b.id, 'ARRIVED')} className="text-xs hover:underline" style={{ color: '#3b82f6' }}>Arrivato</button>
+                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs hover:underline" style={{ color: '#ef4444' }}>Elimina</button>
                         </>
                       )}
                       {b.status === 'ARRIVED' && (
-                        <button onClick={() => updateStatus(b.id, 'COMPLETED')} className="text-xs text-gray-600 hover:underline">Completata</button>
+                        <button onClick={() => updateStatus(b.id, 'COMPLETED')} className="text-xs hover:underline" style={{ color: '#6b7280' }}>Completata</button>
                       )}
                       {b.status === 'WAITLIST' && (
                         <>
-                          <button onClick={() => updateStatus(b.id, 'CONFIRMED')} className="text-xs text-green-600 hover:underline">Conferma</button>
-                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs text-red-600 hover:underline">Elimina</button>
+                          <button onClick={() => updateStatus(b.id, 'CONFIRMED')} className="text-xs hover:underline" style={{ color: '#22c55e' }}>Conferma</button>
+                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs hover:underline" style={{ color: '#ef4444' }}>Elimina</button>
                         </>
                       )}
                     </div>

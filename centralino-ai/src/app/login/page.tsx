@@ -39,52 +39,199 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Netfood Centralino AI</h1>
-          <p className="text-gray-500 mt-2">Accedi al pannello di gestione</p>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+      }}
+    >
+      <div
+        style={{
+          background: 'var(--card-glass)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: '16px',
+          border: '1px solid var(--card-glass-border)',
+          boxShadow: '0 0 40px rgba(6, 182, 212, 0.08), 0 25px 50px rgba(0,0,0,0.3)',
+          width: '100%',
+          maxWidth: '420px',
+          padding: '40px 32px',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+              fontSize: '24px',
+            }}
+          >
+            📞
+          </div>
+          <h1
+            style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              margin: 0,
+            }}
+          >
+            Netfood Centralino AI
+          </h1>
+          <p style={{ color: 'var(--text-muted)', marginTop: '8px', fontSize: '14px' }}>
+            Accedi al pannello di gestione
+          </p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>
+          <div
+            style={{
+              background: 'var(--error-bg)',
+              color: 'var(--error-text)',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              marginBottom: '16px',
+              fontSize: '14px',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+            }}
+          >
+            {error}
+          </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
+                marginBottom: '6px',
+              }}
+            >
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="nome@esempio.it"
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                background: 'var(--input-bg)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '10px',
+                color: 'var(--text-primary)',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                boxSizing: 'border-box',
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent)'
+                e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-glow)'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--input-border)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
+                marginBottom: '6px',
+              }}
+            >
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="La tua password"
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                background: 'var(--input-bg)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '10px',
+                color: 'var(--text-primary)',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                boxSizing: 'border-box',
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent)'
+                e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-glow)'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--input-border)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '15px',
+              fontWeight: 600,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.boxShadow = '0 4px 25px rgba(6, 182, 212, 0.5)'
+                e.currentTarget.style.transform = 'translateY(-1px)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(6, 182, 212, 0.3)'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
           >
             {loading ? 'Accesso in corso...' : 'Accedi'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)', marginTop: '24px' }}>
           Non hai un account?{' '}
-          <a href="/register" className="text-blue-600 hover:underline">Registrati</a>
+          <a
+            href="/register"
+            style={{ color: 'var(--accent)', textDecoration: 'none' }}
+            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}
+          >
+            Registrati
+          </a>
         </p>
       </div>
     </div>

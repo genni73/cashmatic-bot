@@ -16,7 +16,7 @@ export default async function ImpostazioniPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Impostazioni</h1>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Impostazioni</h1>
       <SettingsForm business={business} />
     </div>
   )

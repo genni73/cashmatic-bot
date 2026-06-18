@@ -22,6 +22,37 @@ const BUSINESS_TYPES = [
   { value: 'OTHER', label: 'Altra Attività' },
 ]
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px 14px',
+  background: 'var(--input-bg)',
+  border: '1px solid var(--input-border)',
+  borderRadius: '10px',
+  color: 'var(--text-primary)',
+  fontSize: '14px',
+  outline: 'none',
+  transition: 'border-color 0.2s, box-shadow 0.2s',
+  boxSizing: 'border-box',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '13px',
+  fontWeight: 500,
+  color: 'var(--text-secondary)',
+  marginBottom: '6px',
+}
+
+function handleInputFocus(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
+  e.currentTarget.style.borderColor = 'var(--accent)'
+  e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-glow)'
+}
+
+function handleInputBlur(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
+  e.currentTarget.style.borderColor = 'var(--input-border)'
+  e.currentTarget.style.boxShadow = 'none'
+}
+
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -69,73 +100,135 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Netfood Centralino AI</h1>
-          <p className="text-gray-500 mt-2">Registra la tua attività</p>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+      }}
+    >
+      <div
+        style={{
+          background: 'var(--card-glass)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: '16px',
+          border: '1px solid var(--card-glass-border)',
+          boxShadow: '0 0 40px rgba(6, 182, 212, 0.08), 0 25px 50px rgba(0,0,0,0.3)',
+          width: '100%',
+          maxWidth: '520px',
+          padding: '40px 32px',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+              fontSize: '24px',
+            }}
+          >
+            📞
+          </div>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+            Netfood Centralino AI
+          </h1>
+          <p style={{ color: 'var(--text-muted)', marginTop: '8px', fontSize: '14px' }}>
+            Registra la tua attivita
+          </p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>
+          <div
+            style={{
+              background: 'var(--error-bg)',
+              color: 'var(--error-text)',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              marginBottom: '16px',
+              fontSize: '14px',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+            }}
+          >
+            {error}
+          </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Il tuo nome</label>
+              <label style={labelStyle}>Il tuo nome</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => update('name', e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label style={labelStyle}>Email</label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => update('email', e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label style={labelStyle}>Password</label>
             <input
               type="password"
               value={formData.password}
               onChange={(e) => update('password', e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              style={inputStyle}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             />
           </div>
 
-          <hr className="my-4" />
+          <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '4px 0' }} />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nome Attività</label>
+            <label style={labelStyle}>Nome Attivita</label>
             <input
               type="text"
               value={formData.businessName}
               onChange={(e) => update('businessName', e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="Es: Ristorante Da Mario"
+              style={inputStyle}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo Attività</label>
+            <label style={labelStyle}>Tipo Attivita</label>
             <select
               value={formData.businessType}
               onChange={(e) => update('businessType', e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              style={inputStyle}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             >
               {BUSINESS_TYPES.map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
@@ -143,23 +236,27 @@ export default function RegisterPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+              <label style={labelStyle}>Telefono</label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => update('phone', e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Città</label>
+              <label style={labelStyle}>Citta</label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={(e) => update('city', e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
               />
             </div>
           </div>
@@ -167,15 +264,45 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '15px',
+              fontWeight: 600,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.boxShadow = '0 4px 25px rgba(6, 182, 212, 0.5)'
+                e.currentTarget.style.transform = 'translateY(-1px)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(6, 182, 212, 0.3)'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
           >
-            {loading ? 'Registrazione...' : 'Registra Attività'}
+            {loading ? 'Registrazione...' : 'Registra Attivita'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Hai già un account?{' '}
-          <a href="/login" className="text-blue-600 hover:underline">Accedi</a>
+        <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)', marginTop: '24px' }}>
+          Hai gia un account?{' '}
+          <a
+            href="/login"
+            style={{ color: 'var(--accent)', textDecoration: 'none' }}
+            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}
+          >
+            Accedi
+          </a>
         </p>
       </div>
     </div>

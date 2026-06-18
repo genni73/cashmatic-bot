@@ -10,12 +10,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const typeConfig = BUSINESS_TYPES[session.user.business?.type as BusinessType]
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       <Sidebar
         businessName={session.user.business?.name || 'La tua attività'}
         businessType={typeConfig?.label || 'Attività'}
+        logoUrl={session.user.business?.logoUrl || null}
       />
-      <main className="flex-1 p-8">{children}</main>
+      <main className="flex-1 p-8" style={{ color: 'var(--text-primary)' }}>{children}</main>
     </div>
   )
 }

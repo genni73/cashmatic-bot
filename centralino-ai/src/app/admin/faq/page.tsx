@@ -14,8 +14,8 @@ export default async function FAQPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">FAQ Personalizzate</h1>
-      <p className="text-gray-500 text-sm mb-6">
+      <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>FAQ Personalizzate</h1>
+      <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
         Aggiungi domande e risposte frequenti. L'AI le userà per rispondere ai clienti.
       </p>
       <FAQClient faqs={faqs} businessId={session.user.businessId} />

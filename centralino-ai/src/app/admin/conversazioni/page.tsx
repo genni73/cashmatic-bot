@@ -22,7 +22,7 @@ export default async function ConversazioniPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Conversazioni</h1>
+      <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Conversazioni</h1>
       <ConversationsClient conversations={serialized} />
     </div>
   )

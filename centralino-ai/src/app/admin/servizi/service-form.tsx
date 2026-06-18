@@ -155,25 +155,26 @@ export default function ServiceForm({ services, businessId, categories, serviceL
           onClick={() => setShowImport(!showImport)}
           className="bg-[var(--bg-card)] text-[var(--text-primary)] px-4 py-2 rounded-lg border border-[var(--border-color)] hover:bg-[var(--bg-secondary)] transition-colors text-sm font-medium"
         >
-          Importa CSV
+          Importa (CSV / PDF)
         </button>
       </div>
 
       {showImport && (
         <div className="bg-[var(--bg-card)] rounded-xl shadow-sm border border-[var(--border-color)] p-6 mb-6">
-          <h3 className="font-semibold text-[var(--text-primary)] mb-2">Importa Servizi da CSV</h3>
+          <h3 className="font-semibold text-[var(--text-primary)] mb-2">Importa Servizi / Menu</h3>
           <p className="text-xs text-[var(--text-muted)] mb-4">
-            Formato: Nome;Categoria;Descrizione;Prezzo;Durata (separatore: punto e virgola)
+            Carica un file <strong>PDF</strong> (menu, listino prezzi) o <strong>CSV</strong> (Nome;Categoria;Descrizione;Prezzo;Durata).
+            Il sistema legge automaticamente prodotti, categorie e prezzi dal file.
           </p>
 
           <div className="space-y-4">
             {/* File upload */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Carica file CSV</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Carica file PDF o CSV</label>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".csv,.txt"
+                accept=".csv,.txt,.pdf,application/pdf"
                 onChange={handleFileImport}
                 disabled={importLoading}
                 className="block w-full text-sm text-[var(--text-primary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"

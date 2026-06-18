@@ -54,6 +54,11 @@ model Business {
   aiTone             String   @default("FRIENDLY") // FRIENDLY | FORMAL | PROFESSIONAL
   aiWelcomeMessage   String?
   aiClosingMessage   String?
+  maxTables          Int?
+  maxSeats           Int?
+  maxCapacity        Int?
+  autoWaitlist       Boolean  @default(true)
+  waitlistMessage    String?
   whatsappToken      String?
   whatsappPhoneId    String?
   twilioAccountSid   String?

@@ -12,23 +12,58 @@ function parseCSV(text: string): CustomerRow[] {
   const lines = text.trim().split('\n')
   if (lines.length < 2) return []
 
-  // Skip header row (Nome;Telefono;Email)
   const rows: CustomerRow[] = []
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim()
     if (!line) continue
     const cols = line.split(';')
-    const name = cols[0]?.trim()
-    const phone = cols[1]?.trim()
+    const name = cols[0]?.trim().replace(/^"|"$/g, '')
+    const phone = cols[1]?.trim().replace(/^"|"$/g, '')
     if (!name || !phone) continue
 
     rows.push({
       name,
       phone,
-      email: cols[2]?.trim() || null,
+      email: cols[2]?.trim().replace(/^"|"$/g, '') || null,
     })
   }
   return rows
+}
+
+function parsePDFText(text: string): CustomerRow[] {
+  const customers: CustomerRow[] = []
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+
+  const phoneRegex = /(\+?\d[\d\s\-().]{7,}\d)/
+  const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/
+
+  for (const line of lines) {
+    if (line.length < 3) continue
+    if (/^(pagina|page|\d+\/\d+|www\.|http|tel:|fax:|email:)/i.test(line)) continue
+
+    const phoneMatch = line.match(phoneRegex)
+    if (!phoneMatch) continue
+
+    const phone = phoneMatch[1].replace(/[\s\-().]/g, '')
+    if (phone.length < 8) continue
+
+    let name = line.replace(phoneMatch[0], '').trim()
+
+    let email: string | null = null
+    const emailMatch = name.match(emailRegex)
+    if (emailMatch) {
+      email = emailMatch[1]
+      name = name.replace(emailMatch[0], '').trim()
+    }
+
+    name = name.replace(/[,;:\-–—]+$/, '').replace(/^[,;:\-–—]+/, '').trim()
+
+    if (name.length >= 2 && name.length < 80) {
+      customers.push({ name, phone, email })
+    }
+  }
+
+  return customers
 }
 
 export async function POST(request: Request) {
@@ -47,8 +82,19 @@ export async function POST(request: Request) {
       if (!file) {
         return NextResponse.json({ error: 'Nessun file caricato' }, { status: 400 })
       }
-      const text = await file.text()
-      customers = parseCSV(text)
+
+      const fileName = file.name.toLowerCase()
+
+      if (fileName.endsWith('.pdf')) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>
+        const buffer = Buffer.from(await file.arrayBuffer())
+        const pdfData = await pdfParse(buffer)
+        customers = parsePDFText(pdfData.text)
+      } else {
+        const text = await file.text()
+        customers = parseCSV(text)
+      }
     } else if (contentType.includes('application/json')) {
       const body = await request.json()
       if (typeof body.csv === 'string') {
@@ -64,17 +110,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Formato non supportato' }, { status: 400 })
     }
 
-    if (customers.length === 0) {
-      return NextResponse.json({ error: 'Nessun cliente trovato nel file' }, { status: 400 })
-    }
-
-    // Filter out entries without name or phone
     customers = customers.filter((c) => c.name && c.phone)
+
+    if (customers.length === 0) {
+      return NextResponse.json({ error: 'Nessun cliente trovato nel file. Assicurati che il file contenga nomi e numeri di telefono.' }, { status: 400 })
+    }
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    // Create bookings as MANUAL source so customers appear in the customer list
     const created = await prisma.booking.createMany({
       data: customers.map((c) => ({
         businessId: session.user.businessId,
@@ -86,7 +130,7 @@ export async function POST(request: Request) {
         duration: 0,
         status: 'COMPLETED',
         source: 'MANUAL',
-        notes: 'Importato da CSV',
+        notes: 'Importato',
       })),
     })
 

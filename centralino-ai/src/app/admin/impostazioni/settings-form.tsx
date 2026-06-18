@@ -20,6 +20,11 @@ interface Business {
   aiTone: string | null
   aiWelcomeMessage: string | null
   aiClosingMessage: string | null
+  maxTables: number | null
+  maxSeats: number | null
+  maxCapacity: number | null
+  autoWaitlist: boolean
+  waitlistMessage: string | null
   whatsappToken: string | null
   whatsappPhoneId: string | null
 }
@@ -223,6 +228,44 @@ export default function SettingsForm({ business }: { business: Business }) {
         <div className="mt-4">
           <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Messaggio di Chiusura</label>
           <input name="aiClosingMessage" defaultValue={business.aiClosingMessage || ''} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" placeholder="Es: Grazie per averci contattato! A presto!" />
+        </div>
+      </section>
+
+      {/* Regole Prenotazione / Capacità */}
+      <section className="bg-[var(--bg-card)] rounded-xl shadow-sm border border-[var(--border-color)] p-6">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-2">Regole Prenotazione e Capacita</h2>
+        <p className="text-sm text-[var(--text-muted)] mb-4">
+          Imposta la capacita massima della tua attivita. Quando i limiti vengono raggiunti, le nuove prenotazioni vanno automaticamente in lista d&apos;attesa e il cliente viene avvisato.
+        </p>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Numero Tavoli</label>
+            <input name="maxTables" type="number" min="0" defaultValue={business.maxTables || ''} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" placeholder="Es: 40" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Posti a Sedere</label>
+            <input name="maxSeats" type="number" min="0" defaultValue={business.maxSeats || ''} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" placeholder="Es: 100" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Capacita Massima</label>
+            <input name="maxCapacity" type="number" min="0" defaultValue={business.maxCapacity || ''} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" placeholder="Es: 120" />
+          </div>
+        </div>
+        <div className="mt-4 flex items-center gap-3">
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" name="autoWaitlist" defaultChecked={business.autoWaitlist} className="sr-only peer" />
+            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+          </label>
+          <span className="text-sm text-[var(--text-secondary)]">Lista d&apos;attesa automatica quando pieno</span>
+        </div>
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Messaggio Lista d&apos;Attesa</label>
+          <textarea name="waitlistMessage" defaultValue={business.waitlistMessage || ''} rows={2} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" placeholder="Es: Gentile cliente, al momento siamo al completo. La inseriamo in lista d'attesa e la avviseremo appena si libera un posto." />
+        </div>
+        <div className="mt-3 p-3 rounded-lg" style={{ background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.2)' }}>
+          <p className="text-xs" style={{ color: '#06b6d4' }}>
+            Quando la capacita viene superata, l&apos;AI mettera automaticamente il cliente in lista d&apos;attesa e inviera il messaggio sopra tramite WhatsApp/SMS.
+          </p>
         </div>
       </section>
 

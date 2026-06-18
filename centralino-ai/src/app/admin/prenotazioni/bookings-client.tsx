@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 interface Booking {
   id: string
@@ -22,8 +23,29 @@ interface Props {
   hasNumberOfPeople: boolean
 }
 
+const statusColors: Record<string, string> = {
+  PENDING: 'bg-yellow-100 text-yellow-700',
+  CONFIRMED: 'bg-green-100 text-green-700',
+  ARRIVED: 'bg-blue-100 text-blue-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+  COMPLETED: 'bg-gray-100 text-gray-700',
+  WAITLIST: 'bg-orange-100 text-orange-700',
+}
+
+const statusLabels: Record<string, string> = {
+  PENDING: 'Da confermare',
+  CONFIRMED: 'Confermata',
+  ARRIVED: 'Arrivato',
+  CANCELLED: 'Eliminata',
+  COMPLETED: 'Completata',
+  WAITLIST: 'Lista d\'attesa',
+}
+
+const ALL_STATUSES = ['ALL', 'PENDING', 'CONFIRMED', 'ARRIVED', 'WAITLIST', 'CANCELLED', 'COMPLETED'] as const
+
 export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
   const router = useRouter()
+  const [filterStatus, setFilterStatus] = useState<string>('ALL')
 
   async function updateStatus(id: string, status: string) {
     await fetch(`/api/bookings?id=${id}`, {
@@ -34,25 +56,34 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
     router.refresh()
   }
 
-  const statusColors: Record<string, string> = {
-    PENDING: 'bg-yellow-100 text-yellow-700',
-    CONFIRMED: 'bg-green-100 text-green-700',
-    CANCELLED: 'bg-red-100 text-red-700',
-    COMPLETED: 'bg-gray-100 text-gray-700',
-  }
+  const filtered = filterStatus === 'ALL' ? bookings : bookings.filter(b => b.status === filterStatus)
 
-  const statusLabels: Record<string, string> = {
-    PENDING: 'In attesa',
-    CONFIRMED: 'Confermata',
-    CANCELLED: 'Cancellata',
-    COMPLETED: 'Completata',
+  const counts: Record<string, number> = {}
+  for (const s of ALL_STATUSES) {
+    counts[s] = s === 'ALL' ? bookings.length : bookings.filter(b => b.status === s).length
   }
 
   return (
     <div>
-      {bookings.length === 0 ? (
+      <div className="flex flex-wrap gap-2 mb-4">
+        {ALL_STATUSES.map((s) => (
+          <button
+            key={s}
+            onClick={() => setFilterStatus(s)}
+            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+              filterStatus === s
+                ? 'bg-blue-600 text-white'
+                : s === 'ALL' ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : `${statusColors[s]} hover:opacity-80`
+            }`}
+          >
+            {s === 'ALL' ? 'Tutte' : statusLabels[s]} ({counts[s]})
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-          <p className="text-gray-500">Nessuna prenotazione ancora. Le prenotazioni dall'AI appariranno qui.</p>
+          <p className="text-gray-500">Nessuna prenotazione {filterStatus !== 'ALL' ? `con stato "${statusLabels[filterStatus]}"` : ''}.</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -70,7 +101,7 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {bookings.map((b) => (
+              {filtered.map((b) => (
                 <tr key={b.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <p className="font-medium text-gray-900">{b.customerName}</p>
@@ -89,15 +120,28 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 flex-wrap">
                       {b.status === 'PENDING' && (
                         <>
                           <button onClick={() => updateStatus(b.id, 'CONFIRMED')} className="text-xs text-green-600 hover:underline">Conferma</button>
-                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs text-red-600 hover:underline">Rifiuta</button>
+                          <button onClick={() => updateStatus(b.id, 'WAITLIST')} className="text-xs text-orange-600 hover:underline">In Lista</button>
+                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs text-red-600 hover:underline">Elimina</button>
                         </>
                       )}
                       {b.status === 'CONFIRMED' && (
-                        <button onClick={() => updateStatus(b.id, 'COMPLETED')} className="text-xs text-blue-600 hover:underline">Completata</button>
+                        <>
+                          <button onClick={() => updateStatus(b.id, 'ARRIVED')} className="text-xs text-blue-600 hover:underline">Arrivato</button>
+                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs text-red-600 hover:underline">Elimina</button>
+                        </>
+                      )}
+                      {b.status === 'ARRIVED' && (
+                        <button onClick={() => updateStatus(b.id, 'COMPLETED')} className="text-xs text-gray-600 hover:underline">Completata</button>
+                      )}
+                      {b.status === 'WAITLIST' && (
+                        <>
+                          <button onClick={() => updateStatus(b.id, 'CONFIRMED')} className="text-xs text-green-600 hover:underline">Conferma</button>
+                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs text-red-600 hover:underline">Elimina</button>
+                        </>
                       )}
                     </div>
                   </td>

@@ -7,6 +7,7 @@ const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/admin/servizi', label: 'Servizi / Menu', icon: '📋' },
   { href: '/admin/prenotazioni', label: 'Prenotazioni', icon: '📅' },
+  { href: '/admin/clienti', label: 'Clienti', icon: '👥' },
   { href: '/admin/conversazioni', label: 'Conversazioni', icon: '💬' },
   { href: '/admin/faq', label: 'FAQ', icon: '❓' },
   { href: '/admin/impostazioni', label: 'Impostazioni', icon: '⚙️' },
@@ -18,7 +19,7 @@ export default function Sidebar({ businessName, businessType }: { businessName: 
   return (
     <aside className="w-64 bg-gray-900 text-white min-h-screen flex flex-col">
       <div className="p-6 border-b border-gray-700">
-        <h1 className="text-lg font-bold">Centralino AI</h1>
+        <h1 className="text-lg font-bold">Netfood Centralino AI</h1>
         <p className="text-sm text-gray-400 mt-1">{businessName}</p>
         <span className="text-xs bg-blue-600 px-2 py-0.5 rounded-full mt-2 inline-block">{businessType}</span>
       </div>

@@ -98,7 +98,7 @@ model Service {
 
 // ─── Booking ─────────────────────────────────────────────────────────────────
 // Reservations and appointments
-// status valid values: PENDING, CONFIRMED, CANCELLED, COMPLETED
+// status valid values: PENDING, CONFIRMED, ARRIVED, CANCELLED, COMPLETED, WAITLIST
 // source valid values: WHATSAPP, PHONE, WEB, MANUAL
 model Booking {
   id             String   @id @default(cuid())
@@ -113,7 +113,7 @@ model Booking {
   time           String
   duration       Int      @default(30) // duration in minutes
   numberOfPeople Int? // for restaurant reservations
-  status         String   @default("PENDING") // PENDING | CONFIRMED | CANCELLED | COMPLETED
+  status         String   @default("PENDING") // PENDING | CONFIRMED | ARRIVED | CANCELLED | COMPLETED | WAITLIST
   notes          String?
   source         String   @default("MANUAL") // WHATSAPP | PHONE | WEB | MANUAL
   createdAt      DateTime @default(now())

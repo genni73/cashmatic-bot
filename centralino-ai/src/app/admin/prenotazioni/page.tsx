@@ -21,7 +21,13 @@ export default async function PrenotazioniPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{typeConfig?.bookingLabel || 'Prenotazioni'}</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">{typeConfig?.bookingLabel || 'Prenotazioni'}</h1>
+        <div className="flex gap-2">
+          <a href="/api/export/customers?format=csv" className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50">📊 Clienti Excel</a>
+          <a href="/api/export/customers?format=pdf" className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50">📄 Clienti PDF</a>
+        </div>
+      </div>
       <BookingsClient bookings={serialized} hasNumberOfPeople={typeConfig?.hasNumberOfPeople || false} />
     </div>
   )

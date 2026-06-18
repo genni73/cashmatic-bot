@@ -19,6 +19,10 @@ export default async function ServiziPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{typeConfig?.serviceLabel || 'Servizi'}</h1>
+        <div className="flex gap-2">
+          <a href="/api/export/services?format=csv" className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50">📊 Excel</a>
+          <a href="/api/export/services?format=pdf" className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50">📄 PDF</a>
+        </div>
       </div>
       <ServiceForm
         services={services}

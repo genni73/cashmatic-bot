@@ -64,6 +64,8 @@ model Business {
   twilioAccountSid   String?
   twilioAuthToken    String?
   twilioPhoneNumber  String?
+  vapiPhoneNumber    String?
+  vapiAssistantId    String?
   isActive           Boolean  @default(true)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

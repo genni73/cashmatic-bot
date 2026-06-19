@@ -32,6 +32,8 @@ export async function PUT(request: Request) {
       waitlistMessage: data.waitlistMessage !== undefined ? data.waitlistMessage || null : undefined,
       whatsappToken: data.whatsappToken || null,
       whatsappPhoneId: data.whatsappPhoneId || null,
+      vapiPhoneNumber: data.vapiPhoneNumber !== undefined ? data.vapiPhoneNumber || null : undefined,
+      vapiAssistantId: data.vapiAssistantId !== undefined ? data.vapiAssistantId || null : undefined,
     },
   })
 

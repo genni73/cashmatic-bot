@@ -27,6 +27,8 @@ interface Business {
   waitlistMessage: string | null
   whatsappToken: string | null
   whatsappPhoneId: string | null
+  vapiPhoneNumber: string | null
+  vapiAssistantId: string | null
 }
 
 const BUSINESS_TYPES = [
@@ -282,6 +284,30 @@ export default function SettingsForm({ business }: { business: Business }) {
             <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">WhatsApp Phone ID</label>
             <input name="whatsappPhoneId" defaultValue={business.whatsappPhoneId || ''} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" />
           </div>
+        </div>
+      </section>
+
+      {/* Centralino Vocale AI (Vapi) */}
+      <section className="bg-[var(--bg-card)] rounded-xl shadow-sm border border-[var(--border-color)] p-6">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-2">Centralino Vocale AI</h2>
+        <p className="text-sm text-[var(--text-muted)] mb-4">
+          Configura il centralino telefonico con intelligenza artificiale. L&apos;AI risponde alle chiamate, prende prenotazioni e gestisce le richieste dei clienti a voce.
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Numero Telefono Vapi</label>
+            <input name="vapiPhoneNumber" defaultValue={business.vapiPhoneNumber || ''} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" placeholder="Es: +3902..." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Vapi Assistant ID</label>
+            <input name="vapiAssistantId" defaultValue={business.vapiAssistantId || ''} className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] bg-[var(--bg-secondary)] text-sm" placeholder="ID dall'assistente Vapi" />
+          </div>
+        </div>
+        <div className="mt-3 p-3 rounded-lg" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
+          <p className="text-xs" style={{ color: '#8b5cf6' }}>
+            Il centralino vocale usa la stessa AI del chatbot WhatsApp. Quando un cliente chiama, l&apos;AI risponde a voce, fornisce informazioni e prende prenotazioni automaticamente.
+            <br />Server URL webhook: <code className="bg-[var(--bg-secondary)] px-1 rounded">{typeof window !== 'undefined' ? window.location.origin : ''}/api/webhook/vapi</code>
+          </p>
         </div>
       </section>
 

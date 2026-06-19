@@ -56,6 +56,15 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
     router.refresh()
   }
 
+  async function notifyWaitlist(id: string, action: 'confirm' | 'cancel') {
+    await fetch('/api/bookings/notify-waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingId: id, action }),
+    })
+    router.refresh()
+  }
+
   const filtered = filterStatus === 'ALL' ? bookings : bookings.filter(b => b.status === filterStatus)
 
   const counts: Record<string, number> = {}
@@ -142,8 +151,8 @@ export default function BookingsClient({ bookings, hasNumberOfPeople }: Props) {
                       )}
                       {b.status === 'WAITLIST' && (
                         <>
-                          <button onClick={() => updateStatus(b.id, 'CONFIRMED')} className="text-xs hover:underline" style={{ color: '#22c55e' }}>Conferma</button>
-                          <button onClick={() => updateStatus(b.id, 'CANCELLED')} className="text-xs hover:underline" style={{ color: '#ef4444' }}>Elimina</button>
+                          <button onClick={() => notifyWaitlist(b.id, 'confirm')} className="text-xs font-medium px-2 py-1 rounded" style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e' }}>Conferma e Avvisa</button>
+                          <button onClick={() => notifyWaitlist(b.id, 'cancel')} className="text-xs font-medium px-2 py-1 rounded" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>Elimina e Avvisa</button>
                         </>
                       )}
                     </div>

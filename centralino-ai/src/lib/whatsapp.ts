@@ -1,5 +1,5 @@
 export async function sendWhatsAppMessage(phoneNumberId: string, token: string, to: string, text: string) {
-  const res = await fetch(`https://graph.facebook.com/v18.0/${phoneNumberId}/messages`, {
+  const res = await fetch(`https://graph.facebook.com/v25.0/${phoneNumberId}/messages`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,

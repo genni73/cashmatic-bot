@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Cashmatic Selfpay 1060 – TikTok Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    overflow: hidden;
+  }
+
+  #screen {
+    width: 100vw;
+    max-width: 430px;
+    height: 100vh;
+    max-height: 932px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #040e22 0%, #0d1b3e 55%, #071428 100%);
+  }
+
+  /* Progress bar */
+  #progress {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 6px;
+    width: 0%;
+    background: linear-gradient(90deg, #00ccff, #f5c842);
+    border-radius: 0 3px 3px 0;
+    z-index: 100;
+    transition: width 0.1s linear;
+  }
+
+  /* Particles */
+  .dot {
+    position: absolute;
+    border-radius: 50%;
+    background: #00ccff;
+    animation: pulse-dot 3s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* ── Scenes ── */
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+    padding: 40px 30px;
+  }
+  .scene.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Logo */
+  #scene-logo { gap: 20px; }
+  #logo-img {
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    animation: glow-pulse 2s ease-in-out infinite;
+    transform: scale(0);
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #scene-logo.active #logo-img { transform: scale(1); }
+  @keyframes glow-pulse {
+    0%, 100% { filter: drop-shadow(0 0 20px #00ccff) drop-shadow(0 0 40px #00ccff88); }
+    50%       { filter: drop-shadow(0 0 40px #00ccff) drop-shadow(0 0 80px #00ccffaa); }
+  }
+
+  /* Hook */
+  #scene-hook { gap: 16px; }
+  #scene-hook p { font-size: clamp(28px, 7vw, 52px); color: #ffffffbb; font-weight: 600; text-align: center; line-height: 1.25; }
+  #scene-hook .big { font-size: clamp(32px, 9vw, 64px); color: #f5c842; font-weight: 900; }
+
+  /* Product */
+  #scene-product { justify-content: space-between; padding: 60px 30px 40px; }
+  #product-img {
+    width: 85%; max-width: 340px;
+    border-radius: 24px;
+    filter: drop-shadow(0 0 30px #00ccff66);
+    transform: scale(0.5); opacity: 0;
+    transition: transform 1s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.5s ease;
+  }
+  #scene-product.active #product-img { transform: scale(1); opacity: 1; }
+
+  /* Vantaggi */
+  #scene-vantaggi { gap: 18px; padding: 40px 24px; }
+  .card {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(0,204,255,0.25);
+    border-left: 5px solid #00ccff;
+    border-radius: 18px;
+    padding: 18px 20px;
+    transform: translateX(-120px);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.4s ease;
+  }
+  .card.green  { border-left-color: #4ade80; }
+  .card.gold   { border-left-color: #f5c842; }
+  .card.red    { border-left-color: #f87171; }
+  #scene-vantaggi.active .card { transform: translateX(0); opacity: 1; }
+  #scene-vantaggi.active .card:nth-child(2) { transition-delay: 0.15s; }
+  #scene-vantaggi.active .card:nth-child(3) { transition-delay: 0.30s; }
+  #scene-vantaggi.active .card:nth-child(4) { transition-delay: 0.45s; }
+  .card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .card-top span.emoji { font-size: clamp(28px, 7vw, 44px); }
+  .card-top .title { font-size: clamp(20px, 5vw, 34px); color: #fff; font-weight: 900; }
+  .card-sub { font-size: clamp(14px, 3.5vw, 22px); color: #00ccff; font-weight: 600; padding-left: 52px; }
+  .card.green  .card-sub { color: #4ade80; }
+  .card.gold   .card-sub { color: #f5c842; }
+  .card.red    .card-sub { color: #f87171; }
+
+  /* CTA */
+  #scene-cta { gap: 0; }
+  .cta-box {
+    background: rgba(13,27,62,0.85);
+    border: 2px solid #00ccff;
+    border-radius: 24px;
+    padding: 36px 28px;
+    text-align: center;
+    width: 100%;
+    transform: scale(0.7); opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.5s ease;
+  }
+  #scene-cta.active .cta-box { transform: scale(1); opacity: 1; }
+  .cta-box h2 { font-size: clamp(22px, 5.5vw, 40px); color: #fff; font-weight: 900; margin-bottom: 16px; }
+  .cta-box .cta-site { font-size: clamp(20px, 5vw, 36px); color: #00ccff; font-weight: 900; margin-bottom: 8px; }
+  .cta-box .cta-call { font-size: clamp(18px, 4.5vw, 32px); color: #f5c842; font-weight: 900; margin-bottom: 24px; }
+  .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .badge {
+    background: rgba(0,204,255,0.13);
+    border: 1.5px solid rgba(0,204,255,0.4);
+    border-radius: 30px;
+    padding: 8px 18px;
+    font-size: clamp(13px, 3vw, 20px);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* Outro */
+  #scene-outro { gap: 24px; }
+  #outro-logo {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    animation: glow-pulse 1.5s ease-in-out infinite;
+    transform: scale(0); opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+  }
+  #scene-outro.active #outro-logo { transform: scale(1); opacity: 1; }
+
+  /* Common text helpers */
+  .t-white   { color: #fff; font-weight: 900; text-align: center; font-size: clamp(20px, 5vw, 36px); }
+  .t-cyan    { color: #00ccff; font-weight: 700; text-align: center; font-size: clamp(18px, 4.5vw, 32px); }
+  .t-gold    { color: #f5c842; font-weight: 900; text-align: center; font-size: clamp(20px, 5vw, 36px); }
+  .t-gray    { color: rgba(255,255,255,0.55); text-align: center; font-size: clamp(14px, 3.5vw, 24px); }
+
+  /* Slide-in text */
+  .slide-text {
+    transform: translateY(40px); opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.4s ease;
+  }
+  .active .slide-text { transform: translateY(0); opacity: 1; }
+  .active .slide-text:nth-child(2) { transition-delay: 0.12s; }
+  .active .slide-text:nth-child(3) { transition-delay: 0.22s; }
+  .active .slide-text:nth-child(4) { transition-delay: 0.32s; }
+
+  /* Replay button */
+  #replay {
+    position: absolute;
+    bottom: 28px; right: 20px;
+    background: rgba(0,204,255,0.2);
+    border: 2px solid #00ccff;
+    border-radius: 50%;
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer; z-index: 200;
+    opacity: 0; transition: opacity 0.4s;
+  }
+  #replay.show { opacity: 1; }
+
+  /* Scene nav dots */
+  #dots {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 200;
+  }
+  .dot-nav {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .dot-nav.active { background: #00ccff; transform: scale(1.4); }
+</style>
+</head>
+<body>
+
+<div id="screen">
+
+  <!-- Particelle di sfondo -->
+  <div class="dot" style="width:4px;height:4px;left:12%;top:18%;animation-delay:0s;animation-duration:2.8s"></div>
+  <div class="dot" style="width:3px;height:3px;left:78%;top:9%;animation-delay:0.5s;animation-duration:3.5s"></div>
+  <div class="dot" style="width:5px;height:5px;left:35%;top:72%;animation-delay:1s;animation-duration:2.2s"></div>
+  <div class="dot" style="width:3px;height:3px;left:88%;top:45%;animation-delay:1.8s;animation-duration:4s"></div>
+  <div class="dot" style="width:4px;height:4px;left:6%;top:60%;animation-delay:0.3s;animation-duration:3.2s"></div>
+  <div class="dot" style="width:3px;height:3px;left:55%;top:85%;animation-delay:2s;animation-duration:2.6s"></div>
+  <div class="dot" style="width:6px;height:6px;left:90%;top:80%;animation-delay:0.8s;animation-duration:3.8s"></div>
+  <div class="dot" style="width:3px;height:3px;left:22%;top:5%;animation-delay:1.5s;animation-duration:2.9s"></div>
+
+  <!-- Progress bar -->
+  <div id="progress"></div>
+
+  <!-- ── SCENA 1: Logo GF ── -->
+  <div class="scene" id="scene-logo">
+    <img id="logo-img" src="logo-gf.png" alt="GF Casse Automatiche">
+    <p class="slide-text t-cyan" style="font-size:clamp(18px,4.5vw,32px);font-weight:900;letter-spacing:2px;margin-top:16px">CASSE AUTOMATICHE</p>
+    <p class="slide-text t-gray">perIlDenaro.it</p>
+  </div>
+
+  <!-- ── SCENA 2: Hook ── -->
+  <div class="scene" id="scene-hook">
+    <p class="slide-text">Stai ancora</p>
+    <p class="slide-text" style="font-size:clamp(26px,7vw,52px);color:#ffffffbb;font-weight:700;text-align:center">contando i soldi</p>
+    <p class="slide-text big">a mano? 😰</p>
+  </div>
+
+  <!-- ── SCENA 3: Selfpay 1060 ── -->
+  <div class="scene" id="scene-product">
+    <p class="slide-text t-cyan" style="font-size:clamp(18px,4.5vw,30px);margin-bottom:10px">Ecco la soluzione 👇</p>
+    <img id="product-img" src="selfpay-1060.jpeg" alt="Cashmatic Selfpay 1060">
+    <div style="text-align:center;margin-top:16px">
+      <p class="slide-text t-white" style="font-size:clamp(24px,6vw,44px)">CASHMATIC</p>
+      <p class="slide-text t-cyan" style="font-size:clamp(20px,5vw,36px)">Selfpay 1060</p>
+      <p class="slide-text t-gold">🏆 La più veloce sul mercato</p>
+    </div>
+  </div>
+
+  <!-- ── SCENA 4: Vantaggi ── -->
+  <div class="scene" id="scene-vantaggi">
+    <p class="slide-text t-white" style="font-size:clamp(22px,6vw,44px);margin-bottom:4px">I vantaggi? 👇</p>
+    <div class="card gold">
+      <div class="card-top"><span class="emoji">⚡</span><span class="title">Velocissima</span></div>
+      <p class="card-sub">Banconote processate in &lt;1 secondo</p>
+    </div>
+    <div class="card">
+      <div class="card-top"><span class="emoji">💰</span><span class="title">100% Automatica</span></div>
+      <p class="card-sub">Conta banconote E monete da sola</p>
+    </div>
+    <div class="card green">
+      <div class="card-top"><span class="emoji">✅</span><span class="title">Zero Errori</span></div>
+      <p class="card-sub">Addio ammanchi e differenze cassa</p>
+    </div>
+    <div class="card red">
+      <div class="card-top"><span class="emoji">🔒</span><span class="title">Sicurezza H24</span></div>
+      <p class="card-sub">Il denaro sempre protetto e contato</p>
+    </div>
+  </div>
+
+  <!-- ── SCENA 5: CTA ── -->
+  <div class="scene" id="scene-cta">
+    <div class="cta-box">
+      <h2>Vuoi saperne di più?</h2>
+      <p class="cta-site">🌐 perIlDenaro.it</p>
+      <p class="cta-call">📞 Chiamaci ora!</p>
+      <div class="badges">
+        <span class="badge">Assistenza</span>
+        <span class="badge">Vendita</span>
+        <span class="badge">Noleggio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCENA 6: Outro ── -->
+  <div class="scene" id="scene-outro">
+    <img id="outro-logo" src="logo-gf.png" alt="GF">
+    <p class="slide-text t-white">GF Casse Automatiche</p>
+    <p class="slide-text t-cyan">perIlDenaro.it</p>
+    <p class="slide-text t-gold">📍 Seguici su TikTok!</p>
+  </div>
+
+  <!-- Nav dots -->
+  <div id="dots">
+    <div class="dot-nav" data-scene="0"></div>
+    <div class="dot-nav" data-scene="1"></div>
+    <div class="dot-nav" data-scene="2"></div>
+    <div class="dot-nav" data-scene="3"></div>
+    <div class="dot-nav" data-scene="4"></div>
+    <div class="dot-nav" data-scene="5"></div>
+  </div>
+
+  <!-- Replay -->
+  <div id="replay" title="Rivedi">↺</div>
+
+</div>
+
+<script>
+const scenes = [
+  { el: document.getElementById('scene-logo'),      duration: 3500 },
+  { el: document.getElementById('scene-hook'),      duration: 3200 },
+  { el: document.getElementById('scene-product'),   duration: 5000 },
+  { el: document.getElementById('scene-vantaggi'),  duration: 7000 },
+  { el: document.getElementById('scene-cta'),       duration: 6000 },
+  { el: document.getElementById('scene-outro'),     duration: 5000 },
+];
+
+const progressEl = document.getElementById('progress');
+const replayEl   = document.getElementById('replay');
+const dots       = document.querySelectorAll('.dot-nav');
+
+let current = 0;
+let startTime = null;
+let rafId = null;
+let totalDuration = scenes.reduce((a, s) => a + s.duration, 0);
+let elapsed = 0;
+
+function showScene(idx) {
+  scenes.forEach((s, i) => {
+    s.el.classList.toggle('active', i === idx);
+  });
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+
+function animate(ts) {
+  if (!startTime) startTime = ts;
+  elapsed = ts - startTime;
+
+  // Update progress bar
+  progressEl.style.width = Math.min((elapsed / totalDuration) * 100, 100) + '%';
+
+  // Determine current scene
+  let acc = 0;
+  for (let i = 0; i < scenes.length; i++) {
+    acc += scenes[i].duration;
+    if (elapsed < acc) {
+      if (i !== current) { current = i; showScene(i); }
+      break;
+    }
+  }
+
+  if (elapsed < totalDuration) {
+    rafId = requestAnimationFrame(animate);
+  } else {
+    // Done
+    replayEl.classList.add('show');
+  }
+}
+
+function start() {
+  current = 0;
+  startTime = null;
+  elapsed = 0;
+  replayEl.classList.remove('show');
+  progressEl.style.width = '0%';
+  showScene(0);
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(animate);
+}
+
+replayEl.addEventListener('click', start);
+
+// Tap to advance
+document.getElementById('screen').addEventListener('click', (e) => {
+  if (e.target === replayEl || replayEl.contains(e.target)) return;
+  if (current < scenes.length - 1) {
+    // Skip to next scene immediately
+    let acc = 0;
+    for (let i = 0; i <= current; i++) acc += scenes[i].duration;
+    startTime = performance.now() - acc;
+  }
+});
+
+// Nav dots click
+dots.forEach((d) => {
+  d.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const idx = parseInt(d.dataset.scene);
+    let acc = 0;
+    for (let i = 0; i < idx; i++) acc += scenes[i].duration;
+    startTime = performance.now() - acc;
+    current = idx;
+    showScene(idx);
+    replayEl.classList.remove('show');
+    if (!rafId) rafId = requestAnimationFrame(animate);
+  });
+});
+
+// Auto-start
+start();
+</script>
+</body>
+</html>

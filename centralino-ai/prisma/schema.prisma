@@ -71,11 +71,12 @@ model Business {
   updatedAt          DateTime @updatedAt
 
   // Relations
-  users         User[]
-  services      Service[]
-  bookings      Booking[]
-  conversations Conversation[]
-  faqs          FAQ[]
+  users           User[]
+  services        Service[]
+  bookings        Booking[]
+  conversations   Conversation[]
+  faqs            FAQ[]
+  knowledgeNotes  KnowledgeNote[]
 
   @@index([slug])
   @@map("businesses")
@@ -168,6 +169,26 @@ model Message {
 
   @@index([conversationId])
   @@map("messages")
+}
+
+// ─── KnowledgeNote ───────────────────────────────────────────────────────────
+// Knowledge base notes (imported from Obsidian or written manually)
+// source valid values: MANUAL, OBSIDIAN
+model KnowledgeNote {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  title      String
+  content    String
+  tags       String? // comma-separated
+  source     String   @default("MANUAL") // MANUAL | OBSIDIAN
+  fileName   String? // original .md filename
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([businessId])
+  @@map("knowledge_notes")
 }
 
 // ─── FAQ ─────────────────────────────────────────────────────────────────────

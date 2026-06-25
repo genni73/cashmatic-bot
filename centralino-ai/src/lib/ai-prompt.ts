@@ -34,6 +34,11 @@ interface BusinessConfig {
     tables: number
     seats: number
   }
+  knowledgeNotes?: Array<{
+    title: string
+    content: string
+    tags?: string | null
+  }>
 }
 
 export function buildSystemPrompt(business: BusinessConfig): string {
@@ -86,6 +91,14 @@ export function buildSystemPrompt(business: BusinessConfig): string {
     }
   }
 
+  let knowledgeSection = ''
+  if (business.knowledgeNotes && business.knowledgeNotes.length > 0) {
+    knowledgeSection = '\n=== KNOWLEDGE BASE ===\n' +
+      business.knowledgeNotes
+        .map(n => `### ${n.title}\n${n.content}`)
+        .join('\n\n')
+  }
+
   return `Sei l'assistente virtuale di ${business.name}, ${typeConfig.label.toLowerCase()} situato a ${business.city || 'indirizzo non specificato'}.
 ${business.description ? `\nDescrizione: ${business.description}` : ''}
 
@@ -103,6 +116,7 @@ ${business.openingHours ? `\nOrari di apertura:\n${business.openingHours}` : ''}
 ${servicesList || 'Nessun servizio configurato.'}
 
 ${faqsList ? `=== DOMANDE FREQUENTI ===\n${faqsList}` : ''}
+${knowledgeSection}
 ${capacityRules}
 === PRENOTAZIONI ===
 Puoi prendere prenotazioni. Quando il cliente vuole prenotare, raccogli queste informazioni:

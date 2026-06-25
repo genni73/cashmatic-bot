@@ -103,6 +103,7 @@ export async function POST(request: Request) {
       include: {
         services: { where: { isAvailable: true } },
         faqs: { where: { isActive: true } },
+        knowledgeNotes: { where: { isActive: true }, orderBy: { createdAt: 'desc' } },
       },
     })
 
@@ -164,6 +165,7 @@ export async function POST(request: Request) {
       autoWaitlist: business.autoWaitlist,
       waitlistMessage: business.waitlistMessage,
       currentOccupancy,
+      knowledgeNotes: business.knowledgeNotes,
     })
 
     const messages = [

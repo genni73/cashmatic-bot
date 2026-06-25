@@ -11,6 +11,7 @@ const navItems = [
   { href: '/admin/clienti', label: 'Clienti', icon: '👥' },
   { href: '/admin/conversazioni', label: 'Conversazioni', icon: '💬' },
   { href: '/admin/faq', label: 'FAQ', icon: '❓' },
+  { href: '/admin/knowledge', label: 'Knowledge Base', icon: '📓' },
   { href: '/admin/impostazioni', label: 'Impostazioni', icon: '⚙️' },
 ]
 

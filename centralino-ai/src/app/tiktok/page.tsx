@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Headroom from 'headroom.js'
 import {
   Heart,
   MessageCircle,
@@ -128,8 +129,10 @@ export default function TikTokFeedPage() {
   const [toast, setToast] = useState<string | null>(null)
   const [burst, setBurst] = useState<string | null>(null)
   const [loadedVideos, setLoadedVideos] = useState<Record<string, boolean>>({})
+  const [topBarVisible, setTopBarVisible] = useState(true)
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const topBarRef = useRef<HTMLDivElement>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const burstTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -154,6 +157,23 @@ export default function TikTokFeedPage() {
 
     videos.forEach((video) => observer.observe(video))
     return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!topBarRef.current || !containerRef.current) return
+
+    const headroom = new Headroom(topBarRef.current, {
+      scroller: containerRef.current,
+      offset: 40,
+      tolerance: 5,
+      onPin: () => setTopBarVisible(true),
+      onUnpin: () => setTopBarVisible(false),
+      onTop: () => setTopBarVisible(true),
+    })
+    headroom.init()
+    return () => {
+      if ((headroom as unknown as { scrollTracker?: unknown }).scrollTracker) headroom.destroy()
+    }
   }, [])
 
   function showToast(message: string) {
@@ -235,7 +255,13 @@ export default function TikTokFeedPage() {
     <div className="min-h-screen w-full bg-black flex justify-center">
       <div className="relative w-full max-w-[480px] h-screen bg-black overflow-hidden text-white">
         {/* Top bar */}
-        <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-center gap-6 pt-4 pb-3 bg-gradient-to-b from-black/60 to-transparent">
+        <div
+          ref={topBarRef}
+          className={`absolute top-0 inset-x-0 z-20 flex items-center justify-center gap-6 pt-4 pb-3 bg-gradient-to-b from-black/60 to-transparent transition-transform duration-300 ${
+            topBarVisible ? 'translate-y-0' : '-translate-y-full'
+          }`}
+        >
+
           <button
             onClick={() => showToast('Segui utenti per vedere questa scheda')}
             className="text-sm text-white/60 font-medium"
